@@ -59,17 +59,26 @@ CREATE TRIGGER trg_fsec_updated_at
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
 -- ========================
--- ROW LEVEL SECURITY (optional)
+-- ROW LEVEL SECURITY
 -- ========================
+-- If your data is not saving: run the two CREATE POLICY lines below in
+-- Supabase Dashboard → SQL Editor (your tables may already have RLS with
+-- only "authenticated" allowed; anon key needs "anon" policies).
 ALTER TABLE inspection_logbook ENABLE ROW LEVEL SECURITY;
 ALTER TABLE fsec_building_plan_logbook ENABLE ROW LEVEL SECURITY;
 
--- Allow authenticated users full access
-CREATE POLICY "Allow authenticated full access" ON inspection_logbook
-  FOR ALL TO authenticated USING (true) WITH CHECK (true);
+-- Allow anonymous (anon key) full access so the app can save/load without sign-in
+CREATE POLICY "Allow anon all inspection_logbook" ON inspection_logbook
+  FOR ALL TO anon USING (true) WITH CHECK (true);
 
-CREATE POLICY "Allow authenticated full access" ON fsec_building_plan_logbook
-  FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Allow anon all fsec_building_plan_logbook" ON fsec_building_plan_logbook
+  FOR ALL TO anon USING (true) WITH CHECK (true);
+
+-- Optional: allow authenticated users too (if you add login later)
+-- CREATE POLICY "Allow authenticated full access" ON inspection_logbook
+--   FOR ALL TO authenticated USING (true) WITH CHECK (true);
+-- CREATE POLICY "Allow authenticated full access" ON fsec_building_plan_logbook
+--   FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
 ====================================================
 -->
