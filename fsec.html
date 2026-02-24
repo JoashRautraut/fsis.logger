@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BFP Logbook Management System — Manolo Fortich</title>
+<title>BFP Logbook — Manolo Fortich | FSEC Building Plan</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -21,23 +21,13 @@
     --text-mid: #4A4A4A;
     --text-light: #888;
     --white: #FFFFFF;
-    --border: rgba(212, 168, 67, 0.2);
     --shadow: 0 4px 24px rgba(13, 27, 42, 0.12);
     --shadow-lg: 0 12px 48px rgba(13, 27, 42, 0.2);
     --radius: 12px;
     --radius-sm: 8px;
   }
-
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--cream);
-    color: var(--text);
-    min-height: 100vh;
-  }
-
-  /* HEADER */
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
   header {
     background: var(--navy);
     color: var(--white);
@@ -47,7 +37,6 @@
     z-index: 100;
     box-shadow: 0 2px 20px rgba(0,0,0,0.3);
   }
-
   .header-inner {
     max-width: 1200px;
     margin: 0 auto;
@@ -56,24 +45,8 @@
     gap: 12px;
     padding: 14px 0;
   }
-
-  .header-text h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.15rem;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    line-height: 1.2;
-  }
-
-  .header-text p {
-    font-size: 0.72rem;
-    color: var(--gold-light);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    font-weight: 500;
-    margin-top: 2px;
-  }
-
+  .header-text h1 { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; letter-spacing: 0.02em; line-height: 1.2; }
+  .header-text p { font-size: 0.72rem; color: var(--gold-light); letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500; margin-top: 2px; }
   .header-badge {
     margin-left: auto;
     background: rgba(212, 168, 67, 0.15);
@@ -86,7 +59,6 @@
     font-weight: 500;
     white-space: nowrap;
   }
-
   .header-link {
     color: var(--gold-light);
     text-decoration: none;
@@ -98,122 +70,13 @@
     transition: background 0.2s, color 0.2s;
   }
   .header-link:hover { background: rgba(255,255,255,0.15); color: white; }
-
-  /* MAIN */
-  main {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 32px 20px;
-  }
-
-  /* CATEGORY SELECTOR */
-  .category-section { margin-bottom: 32px; }
-
-  .section-label {
-    font-size: 0.7rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--text-light);
-    font-weight: 600;
-    margin-bottom: 12px;
-  }
-
-  .category-cards {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
-
-  .cat-card {
-    background: var(--white);
-    border: 2px solid transparent;
-    border-radius: var(--radius);
-    padding: 24px 20px;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    box-shadow: var(--shadow);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .cat-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 4px; height: 100%;
-    background: var(--fire);
-    transform: scaleY(0);
-    transition: transform 0.25s ease;
-    transform-origin: bottom;
-  }
-
-  .cat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-  .cat-card:hover::before { transform: scaleY(1); }
-  .cat-card.active { border-color: var(--fire); background: #FFF8F8; }
-  .cat-card.active::before { transform: scaleY(1); }
-
-  .cat-icon {
-    width: 52px;
-    height: 52px;
-    border-radius: var(--radius-sm);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    flex-shrink: 0;
-    background: linear-gradient(135deg, #FFF0F0, #FFE0E0);
-  }
-
-  .cat-info h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--navy);
-    line-height: 1.3;
-  }
-
-  .cat-info p {
-    font-size: 0.78rem;
-    color: var(--text-light);
-    margin-top: 3px;
-  }
-
-  .cat-count {
-    margin-left: auto;
-    background: var(--cream-dark);
-    color: var(--text-mid);
-    font-size: 0.78rem;
-    font-weight: 600;
-    padding: 4px 10px;
-    border-radius: 20px;
-    flex-shrink: 0;
-  }
-
-  .cat-card.active .cat-count {
-    background: var(--fire);
-    color: white;
-  }
-
-  /* LOGBOOK PANEL */
+  main { max-width: 1200px; margin: 0 auto; padding: 32px 20px; }
   .logbook-panel {
     background: var(--white);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
     overflow: hidden;
-    display: none;
-    animation: slideIn 0.3s ease;
   }
-
-  .logbook-panel.visible { display: block; }
-
-  @keyframes slideIn {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
   .panel-header {
     background: linear-gradient(135deg, var(--navy), var(--navy-light));
     padding: 20px 24px;
@@ -221,123 +84,26 @@
     align-items: center;
     gap: 12px;
     flex-wrap: wrap;
-    gap: 12px;
   }
-
-  .panel-title {
-    font-family: 'Playfair Display', serif;
-    color: var(--white);
-    font-size: 1.1rem;
-    flex: 1;
-    min-width: 160px;
-  }
-
-  .panel-title span {
-    display: block;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.72rem;
-    color: var(--gold-light);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    font-weight: 500;
-    margin-bottom: 2px;
-  }
-
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    padding: 9px 18px;
-    border-radius: var(--radius-sm);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.82rem;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s;
-    white-space: nowrap;
-  }
-
-  .btn-print {
-    background: rgba(212, 168, 67, 0.15);
-    color: var(--gold-light);
-    border: 1px solid rgba(212, 168, 67, 0.35);
-  }
+  .panel-title { font-family: 'Playfair Display', serif; color: var(--white); font-size: 1.1rem; flex: 1; min-width: 160px; }
+  .panel-title span { display: block; font-family: 'DM Sans', sans-serif; font-size: 0.72rem; color: var(--gold-light); letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500; margin-bottom: 2px; }
+  .btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px; border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; white-space: nowrap; }
+  .btn-print { background: rgba(212, 168, 67, 0.15); color: var(--gold-light); border: 1px solid rgba(212, 168, 67, 0.35); }
   .btn-print:hover { background: rgba(212, 168, 67, 0.25); }
-
-  .btn-add {
-    background: var(--fire);
-    color: white;
-    box-shadow: 0 2px 12px rgba(193, 39, 45, 0.4);
-  }
+  .btn-add { background: var(--fire); color: white; box-shadow: 0 2px 12px rgba(193, 39, 45, 0.4); }
   .btn-add:hover { background: var(--fire-light); transform: scale(1.02); }
-
-  /* TABLE */
   .table-wrap { overflow-x: auto; }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.84rem;
-  }
-
-  thead tr {
-    background: var(--cream-dark);
-  }
-
-  th {
-    padding: 12px 16px;
-    text-align: left;
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-mid);
-    white-space: nowrap;
-  }
-
-  td {
-    padding: 13px 16px;
-    border-bottom: 1px solid #F0EDE8;
-    color: var(--text);
-    vertical-align: middle;
-  }
-
+  table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+  thead tr { background: var(--cream-dark); }
+  th { padding: 12px 16px; text-align: left; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-mid); white-space: nowrap; }
+  td { padding: 13px 16px; border-bottom: 1px solid #F0EDE8; color: var(--text); vertical-align: middle; }
   tr:last-child td { border-bottom: none; }
   tr:hover td { background: #FAFAF8; }
-
-  .td-io {
-    font-family: 'DM Sans', monospace;
-    font-weight: 600;
-    color: var(--fire-dark);
-    font-size: 0.8rem;
-  }
-
-  .td-fsic {
-    font-family: 'DM Sans', monospace;
-    font-size: 0.8rem;
-    color: var(--navy);
-    font-weight: 500;
-  }
-
-  .td-date {
-    white-space: nowrap;
-    color: var(--text-mid);
-    font-size: 0.8rem;
-  }
-
-  /* EMPTY STATE */
-  .empty-state {
-    text-align: center;
-    padding: 60px 24px;
-    color: var(--text-light);
-  }
-
+  .td-date { white-space: nowrap; color: var(--text-mid); font-size: 0.8rem; }
+  .empty-state { text-align: center; padding: 60px 24px; color: var(--text-light); }
   .empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
   .empty-state p { font-size: 0.9rem; }
   .empty-state strong { display: block; font-size: 1.05rem; color: var(--text-mid); margin-bottom: 4px; }
-
-  /* MODAL */
   .modal-overlay {
     position: fixed;
     inset: 0;
@@ -350,11 +116,8 @@
     padding: 20px;
     animation: fadeIn 0.2s ease;
   }
-
   .modal-overlay.open { display: flex; }
-
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
   .modal {
     background: var(--white);
     border-radius: 12px;
@@ -367,12 +130,7 @@
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(13, 27, 42, 0.06);
     animation: modalUp 0.25s ease-out;
   }
-
-  @keyframes modalUp {
-    from { opacity: 0; transform: translateY(-12px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
+  @keyframes modalUp { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
   .modal-header {
     background: linear-gradient(180deg, var(--navy) 0%, var(--navy-mid) 100%);
     padding: 20px 24px;
@@ -382,25 +140,8 @@
     flex-shrink: 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   }
-
-  .modal-header h2 {
-    font-family: 'Playfair Display', serif;
-    color: var(--white);
-    font-size: 1.1rem;
-    font-weight: 600;
-    letter-spacing: 0.01em;
-  }
-
-  .modal-header small {
-    display: block;
-    color: rgba(255, 255, 255, 0.75);
-    font-size: 0.7rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-    font-weight: 500;
-  }
-
+  .modal-header h2 { font-family: 'Playfair Display', serif; color: var(--white); font-size: 1.1rem; font-weight: 600; letter-spacing: 0.01em; }
+  .modal-header small { display: block; color: rgba(255, 255, 255, 0.75); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; font-weight: 500; }
   .btn-close {
     background: rgba(255, 255, 255, 0.12);
     border: none;
@@ -418,20 +159,10 @@
     flex-shrink: 0;
     font-weight: 300;
   }
-
   .btn-close:hover { background: rgba(255, 255, 255, 0.22); }
-
-  .modal-body {
-    padding: 24px 28px;
-    overflow-y: auto;
-  }
-
-  .form-section {
-    margin-bottom: 24px;
-  }
-
+  .modal-body { padding: 24px 28px; overflow-y: auto; }
+  .form-section { margin-bottom: 24px; }
   .form-section:last-child { margin-bottom: 0; }
-
   .form-section-title {
     font-size: 0.7rem;
     font-weight: 600;
@@ -442,24 +173,10 @@
     padding-bottom: 6px;
     border-bottom: 1px solid var(--cream-dark);
   }
-
-  .form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px 18px;
-  }
-
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 18px; }
   .form-group { display: flex; flex-direction: column; gap: 6px; }
   .form-group.full { grid-column: 1 / -1; }
-
-  .modal .form-group label {
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: var(--text-mid);
-  }
-
+  .modal .form-group label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-mid); }
   .modal input,
   .modal textarea {
     padding: 10px 12px;
@@ -472,23 +189,10 @@
     transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
     width: 100%;
   }
-
   .modal input:focus,
-  .modal textarea:focus {
-    outline: none;
-    border-color: var(--navy);
-    box-shadow: 0 0 0 3px rgba(13, 27, 42, 0.06);
-    background: var(--white);
-  }
-
-  .modal input[readonly] {
-    background: #f0eeea;
-    color: var(--text-mid);
-    cursor: default;
-  }
-
+  .modal textarea:focus { outline: none; border-color: var(--navy); box-shadow: 0 0 0 3px rgba(13, 27, 42, 0.06); background: var(--white); }
+  .modal input[readonly] { background: #f0eeea; color: var(--text-mid); cursor: default; }
   .modal textarea { resize: vertical; min-height: 72px; }
-
   .modal-footer {
     padding: 16px 28px 24px;
     display: flex;
@@ -498,23 +202,10 @@
     background: #fafaf8;
     border-top: 1px solid var(--cream-dark);
   }
-
-  .modal .btn-cancel {
-    background: var(--white);
-    color: var(--text-mid);
-    border: 1px solid #ddd;
-  }
+  .modal .btn-cancel { background: var(--white); color: var(--text-mid); border: 1px solid #ddd; }
   .modal .btn-cancel:hover { background: #f5f4f2; border-color: #ccc; }
-
-  .modal .btn-save {
-    background: var(--navy);
-    color: white;
-    border: none;
-    box-shadow: 0 1px 3px rgba(13, 27, 42, 0.2);
-  }
+  .modal .btn-save { background: var(--navy); color: white; border: none; box-shadow: 0 1px 3px rgba(13, 27, 42, 0.2); }
   .modal .btn-save:hover { background: var(--navy-mid); }
-
-  /* ACTION BTNS IN TABLE */
   .tbl-actions { display: flex; gap: 6px; }
   .btn-edit {
     background: none;
@@ -528,7 +219,6 @@
     font-family: 'DM Sans', sans-serif;
   }
   .btn-edit:hover { background: var(--navy); color: white; border-color: var(--navy); }
-
   .btn-del {
     background: none;
     border: 1px solid #ECC;
@@ -541,20 +231,8 @@
     font-family: 'DM Sans', sans-serif;
   }
   .btn-del:hover { background: var(--fire); color: white; border-color: var(--fire); }
-
-  /* FOOTER */
-  footer {
-    text-align: center;
-    padding: 24px;
-    color: var(--text-light);
-    font-size: 0.78rem;
-    border-top: 1px solid var(--cream-dark);
-    margin-top: 40px;
-  }
-
-  /* PRINT STYLES — professional letterhead layout */
+  footer { text-align: center; padding: 24px; color: var(--text-light); font-size: 0.78rem; border-top: 1px solid var(--cream-dark); margin-top: 40px; }
   @page { size: auto; margin: 12mm; }
-
   @media print {
     header, .btn-print, .btn-add, .btn-edit, .btn-del, .tbl-actions, footer { display: none !important; }
     body { background: white; color: #1a1a1a; font-size: 11px; overflow: visible !important; }
@@ -562,13 +240,11 @@
     .logbook-panel { display: block !important; box-shadow: none; border: none; overflow: visible !important; }
     .panel-header { display: none !important; }
     th.col-action, td.col-action { display: none !important; }
-
     .table-wrap {
       overflow: visible !important;
       width: 100%;
       max-width: 100%;
     }
-
     .print-header {
       display: block !important;
       text-align: center;
@@ -577,25 +253,9 @@
       border-bottom: 2px solid #1a1a1a;
       font-family: 'Playfair Display', 'Times New Roman', serif;
     }
-    .print-header h2 {
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: 0.02em;
-      margin: 0 0 6px 0;
-      color: #1a1a1a;
-    }
-    .print-header .print-subtitle {
-      font-size: 11px;
-      color: #444;
-      margin: 2px 0;
-      font-family: 'DM Sans', Arial, sans-serif;
-    }
-    .print-header .print-meta {
-      font-size: 10px;
-      color: #555;
-      margin-top: 8px;
-      font-family: 'DM Sans', Arial, sans-serif;
-    }
+    .print-header h2 { font-size: 20px; font-weight: 700; letter-spacing: 0.02em; margin: 0 0 6px 0; color: #1a1a1a; }
+    .print-header .print-subtitle { font-size: 11px; color: #444; margin: 2px 0; font-family: 'DM Sans', Arial, sans-serif; }
+    .print-header .print-meta { font-size: 10px; color: #555; margin-top: 8px; font-family: 'DM Sans', Arial, sans-serif; }
     .print-footer {
       display: block !important;
       text-align: center;
@@ -605,59 +265,25 @@
       padding-top: 12px;
       border-top: 1px solid #ddd;
     }
-
-    table {
-      font-size: 9px;
-      width: 100% !important;
-      max-width: 100%;
-      table-layout: fixed;
-      border-collapse: collapse;
-      border-bottom: 2px solid #1a1a1a;
-    }
+    table { font-size: 9px; width: 100% !important; max-width: 100%; table-layout: fixed; border-collapse: collapse; border-bottom: 2px solid #1a1a1a; }
     thead tr { background: #f0f0f0 !important; }
-    th {
-      background: #e8e8e8 !important;
-      padding: 5px 6px;
-      text-align: left;
-      font-weight: 600;
-      font-size: 8px;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      border: 1px solid #ccc;
-      overflow: hidden;
-      word-wrap: break-word;
-    }
-    td {
-      padding: 4px 6px;
-      border: 1px solid #ddd;
-      overflow: hidden;
-      word-wrap: break-word;
-      word-break: break-word;
-    }
+    th { background: #e8e8e8 !important; padding: 5px 6px; text-align: left; font-weight: 600; font-size: 8px; letter-spacing: 0.05em; text-transform: uppercase; border: 1px solid #ccc; overflow: hidden; word-wrap: break-word; }
+    td { padding: 4px 6px; border: 1px solid #ddd; overflow: hidden; word-wrap: break-word; word-break: break-word; }
     tbody tr:nth-child(even) td { background: #fafafa; }
   }
-
-.print-header, .print-footer { display: none; }
-
-  /* RESPONSIVE */
+  .print-header, .print-footer { display: none; }
   @media (max-width: 768px) {
-    .category-cards { grid-template-columns: 1fr; }
     .form-grid { grid-template-columns: 1fr; }
-    .cat-card { padding: 18px 16px; }
-    .cat-icon { width: 44px; height: 44px; font-size: 20px; }
     .panel-header { padding: 16px; }
     th, td { padding: 10px 12px; }
     .header-badge { display: none; }
   }
-
   @media (max-width: 480px) {
     main { padding: 20px 12px; }
     .modal-body { padding: 16px; }
     .modal-footer { padding: 12px 16px 20px; }
     .modal-header { padding: 18px 16px; }
   }
-
-  /* TOAST */
   .toast {
     position: fixed;
     bottom: 24px;
@@ -674,7 +300,6 @@
     border-left: 4px solid var(--fire);
     animation: toastIn 0.3s ease;
   }
-
   .toast.show { display: block; }
   @keyframes toastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 </style>
@@ -687,51 +312,48 @@
       <h1>Bureau of Fire Protection — Manolo Fortich</h1>
       <p>Logbook Management System</p>
     </div>
-    <a href="fsec.html" class="header-link">FSEC Building Plan Logbook</a>
-    <div class="header-badge">Inspection Logbook</div>
+    <a href="index.html" class="header-link">Inspection Logbook</a>
+    <div class="header-badge">FSEC Building Plan Logbook</div>
   </div>
 </header>
 
 <main>
-  <!-- Inspection Logbook Panel -->
-  <div class="logbook-panel visible" id="panel-inspection">
+  <div class="logbook-panel" id="panel-fsec">
     <div class="print-header">
       <h2>Bureau of Fire Protection</h2>
       <p class="print-subtitle">Manolo Fortich Fire Station</p>
-      <p class="print-subtitle"><strong>Inspection Logbook</strong> — Fire Safety Inspection Certificates</p>
+      <p class="print-subtitle"><strong>FSEC Building Plan Logbook</strong> — Fire Safety Evaluation Clearances</p>
       <p class="print-meta">Location: Manolo Fortich, Bukidnon &nbsp;|&nbsp; Date printed: <span id="print-date">—</span></p>
     </div>
     <div class="print-footer">Official logbook record. Bureau of Fire Protection — Manolo Fortich. This document is generated from the BFP Logbook Management System.</div>
     <div class="panel-header">
       <div class="panel-title">
         <span>Active Logbook</span>
-        Inspection Logbook
+        FSEC Building Plan Logbook
       </div>
       <button class="btn btn-print" onclick="printPanel()">Print</button>
       <button class="btn btn-add" onclick="openModal()">Add Entry</button>
     </div>
     <div class="table-wrap">
-      <table id="table-inspection">
+      <table id="table-fsec">
         <thead>
           <tr>
             <th>#</th>
-            <th>IO Number</th>
             <th>Name of Owner</th>
-            <th>Business / Establishment</th>
+            <th>Proposed Project</th>
             <th>Address</th>
-            <th>Date Inspected</th>
-            <th>FSIC Number</th>
-            <th>Inspected By</th>
+            <th>Date</th>
+            <th>Contact Number</th>
             <th class="col-action">Action</th>
           </tr>
         </thead>
-        <tbody id="tbody-inspection"></tbody>
+        <tbody id="tbody-fsec"></tbody>
       </table>
     </div>
-    <div id="empty-inspection" class="empty-state" style="display:none;">
+    <div id="empty-fsec" class="empty-state" style="display:none;">
       <div class="empty-icon" aria-hidden="true">—</div>
-      <strong>No Inspection Records Yet</strong>
-      <p>Click "Add Entry" to log a new inspection.</p>
+      <strong>No FSEC Records Yet</strong>
+      <p>Click "Add Entry" to log a new building plan.</p>
     </div>
   </div>
 </main>
@@ -740,76 +362,65 @@
   Bureau of Fire Protection &mdash; Logbook Management System &copy; 2025. All rights reserved.
 </footer>
 
-<!-- Modal -->
 <div class="modal-overlay" id="modal-overlay" onclick="closeOnOverlay(event)">
   <div class="modal">
     <div class="modal-header">
       <div>
-        <small id="modal-subtitle">New Entry</small>
-        <h2 id="modal-title">Add Record</h2>
+        <small id="modal-subtitle">FSEC Building Plan Logbook</small>
+        <h2 id="modal-title">Add FSEC Building Plan Record</h2>
       </div>
       <button class="btn-close" onclick="closeModal()" aria-label="Close">×</button>
     </div>
     <div class="modal-body">
       <form id="entry-form" onsubmit="saveEntry(event)">
-        <div id="fields-inspection">
-          <div class="form-section">
-            <div class="form-section-title">Record details</div>
-            <div class="form-grid">
-              <div class="form-group">
-                <label for="io_number">IO Number</label>
-                <input type="text" id="io_number" placeholder="e.g. IO-2025-001">
-              </div>
-              <div class="form-group">
-                <label for="fsic_number">FSIC Number</label>
-                <input type="text" id="fsic_number" placeholder="e.g. FSIC-2025-001">
-              </div>
-              <div class="form-group full">
-                <label for="insp_owner">Name of Owner</label>
-                <input type="text" id="insp_owner" placeholder="Full name of owner">
-              </div>
-              <div class="form-group full">
-                <label for="business_name">Business / Establishment</label>
-                <input type="text" id="business_name" placeholder="Business or establishment name">
-              </div>
+        <div class="form-section">
+          <div class="form-section-title">Record details</div>
+          <div class="form-grid">
+            <div class="form-group full">
+              <label for="fsec_owner">Name of Owner</label>
+              <input type="text" id="fsec_owner" placeholder="Full name of owner">
+            </div>
+            <div class="form-group full">
+              <label for="proposed_project">Proposed Project</label>
+              <input type="text" id="proposed_project" placeholder="Name or description of proposed project">
             </div>
           </div>
-          <div class="form-section">
-            <div class="form-section-title">Address</div>
-            <div class="form-grid">
-              <div class="form-group">
-                <label for="addr_region">Region</label>
-                <input type="text" id="addr_region" value="X" readonly>
-              </div>
-              <div class="form-group">
-                <label for="addr_province">Province</label>
-                <input type="text" id="addr_province" value="Bukidnon" readonly>
-              </div>
-              <div class="form-group">
-                <label for="addr_municipal">Municipal</label>
-                <input type="text" id="addr_municipal" value="Manolo Fortich" readonly>
-              </div>
-              <div class="form-group">
-                <label for="addr_barangay">Barangay</label>
-                <input type="text" id="addr_barangay" placeholder="e.g. Tankulan">
-              </div>
-              <div class="form-group full">
-                <label for="addr_line">House no. / Street / Zone</label>
-                <input type="text" id="addr_line" placeholder="e.g. Purok 3, Zone 1, National Highway">
-              </div>
+        </div>
+        <div class="form-section">
+          <div class="form-section-title">Address</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="addr_region">Region</label>
+              <input type="text" id="addr_region" value="X" readonly>
+            </div>
+            <div class="form-group">
+              <label for="addr_province">Province</label>
+              <input type="text" id="addr_province" value="Bukidnon" readonly>
+            </div>
+            <div class="form-group">
+              <label for="addr_municipal">Municipal</label>
+              <input type="text" id="addr_municipal" value="Manolo Fortich" readonly>
+            </div>
+            <div class="form-group">
+              <label for="addr_barangay">Barangay</label>
+              <input type="text" id="addr_barangay" placeholder="e.g. Tankulan">
+            </div>
+            <div class="form-group full">
+              <label for="addr_line">House no. / Street / Zone</label>
+              <input type="text" id="addr_line" placeholder="e.g. Purok 3, Zone 1, National Highway">
             </div>
           </div>
-          <div class="form-section">
-            <div class="form-section-title">Inspection</div>
-            <div class="form-grid">
-              <div class="form-group">
-                <label for="date_inspected">Date Inspected</label>
-                <input type="date" id="date_inspected">
-              </div>
-              <div class="form-group">
-                <label for="inspected_by">Inspected By</label>
-                <input type="text" id="inspected_by" placeholder="Name of inspecting officer">
-              </div>
+        </div>
+        <div class="form-section">
+          <div class="form-section-title">Date and contact</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="fsec_date">Date</label>
+              <input type="date" id="fsec_date">
+            </div>
+            <div class="form-group">
+              <label for="contact_number">Contact Number</label>
+              <input type="tel" id="contact_number" placeholder="e.g. 09XX-XXX-XXXX">
             </div>
           </div>
         </div>
@@ -822,20 +433,18 @@
   </div>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<!-- Supabase (for database sync) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
   const SUPABASE_URL = 'https://ezpwbgpbveazutmrnzlf.supabase.co';
-  const SUPABASE_ANON_KEY = ''; // Paste your anon public key (starts with "eyJ...") from Supabase Dashboard → Project Settings → API
+  const SUPABASE_ANON_KEY = ''; // Same as index.html: paste your anon public key from Supabase Dashboard → Project Settings → API
   const supabaseClient = (window.supabase?.createClient && SUPABASE_URL && SUPABASE_ANON_KEY)
     ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
     : null;
 
-  const STORAGE_KEY = 'bfp_inspection';
+  const STORAGE_KEY = 'bfp_fsec';
   let data = [];
   let editingIdx = null;
   let editingId = null;
@@ -855,8 +464,8 @@
   }
 
   function renderTable() {
-    const tbody = document.getElementById('tbody-inspection');
-    const empty = document.getElementById('empty-inspection');
+    const tbody = document.getElementById('tbody-fsec');
+    const empty = document.getElementById('empty-fsec');
     tbody.innerHTML = '';
     if (data.length === 0) {
       empty.style.display = 'block';
@@ -867,13 +476,11 @@
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${i + 1}</td>
-        <td class="td-io">${esc(row.io_number)}</td>
-        <td>${esc(row.insp_owner)}</td>
-        <td><strong>${esc(row.business_name)}</strong></td>
+        <td>${esc(row.fsec_owner)}</td>
+        <td><strong>${esc(row.proposed_project)}</strong></td>
         <td>${esc(formatAddressDisplay(row))}</td>
-        <td class="td-date">${formatDate(row.date_inspected)}</td>
-        <td class="td-fsic">${esc(row.fsic_number)}</td>
-        <td>${esc(row.inspected_by)}</td>
+        <td class="td-date">${formatDate(row.fsec_date)}</td>
+        <td>${esc(row.contact_number)}</td>
         <td class="col-action">
           <div class="tbl-actions">
             <button class="btn-edit" onclick="editEntry(${i})">Edit</button>
@@ -892,22 +499,19 @@
     editingIdx = idx;
     editingId = row.id || null;
 
-    document.getElementById('io_number').value = row.io_number || '';
-    document.getElementById('fsic_number').value = row.fsic_number || '';
-    document.getElementById('insp_owner').value = row.insp_owner || '';
-    document.getElementById('business_name').value = row.business_name || '';
-    document.getElementById('date_inspected').value = row.date_inspected || '';
-    document.getElementById('inspected_by').value = row.inspected_by || '';
+    document.getElementById('fsec_owner').value = row.fsec_owner || '';
+    document.getElementById('proposed_project').value = row.proposed_project || '';
+    document.getElementById('fsec_date').value = row.fsec_date || '';
+    document.getElementById('contact_number').value = row.contact_number || '';
 
-    // Best-effort parse for older saved address strings
-    const addr = (row.insp_address || '').toString();
+    const addr = (row.fsec_address || '').toString();
     const brgyMatch = addr.match(/Barangay\\s+([^,]+)/i);
     document.getElementById('addr_barangay').value = row.addr_barangay || (brgyMatch ? brgyMatch[1].trim() : '');
     document.getElementById('addr_line').value = row.addr_line || '';
 
     document.getElementById('modal-overlay').classList.add('open');
-    document.getElementById('modal-title').textContent = 'Edit Inspection Record';
-    document.getElementById('modal-subtitle').textContent = 'Inspection Logbook';
+    document.getElementById('modal-title').textContent = 'Edit FSEC Building Plan Record';
+    document.getElementById('modal-subtitle').textContent = 'FSEC Building Plan Logbook';
     document.getElementById('btn-save').textContent = 'Update Record';
   }
 
@@ -924,7 +528,7 @@
     if (!row?.id) { showToast('⚠️ Cannot delete: missing record id.'); return; }
     (async () => {
       try {
-        const { error } = await supabaseClient.from('inspection_logbook').delete().eq('id', row.id);
+        const { error } = await supabaseClient.from('fsec_building_plan_logbook').delete().eq('id', row.id);
         if (error) throw error;
         await loadFromSupabase();
         renderTable();
@@ -937,18 +541,18 @@
     editingIdx = null;
     editingId = null;
     document.getElementById('modal-overlay').classList.add('open');
-    document.getElementById('modal-title').textContent = 'Add Inspection Record';
-    document.getElementById('modal-subtitle').textContent = 'Inspection Logbook';
+    document.getElementById('modal-title').textContent = 'Add FSEC Building Plan Record';
+    document.getElementById('modal-subtitle').textContent = 'FSEC Building Plan Logbook';
     document.getElementById('btn-save').textContent = 'Save Record';
     clearForm();
-    document.getElementById('date_inspected').value = new Date().toISOString().slice(0, 10);
+    document.getElementById('fsec_date').value = new Date().toISOString().slice(0, 10);
   }
 
   function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
   function closeOnOverlay(e) { if (e.target === document.getElementById('modal-overlay')) closeModal(); }
 
   function clearForm() {
-    ['io_number','fsic_number','insp_owner','business_name','addr_barangay','addr_line','date_inspected','inspected_by'].forEach(id => {
+    ['fsec_owner','proposed_project','addr_barangay','addr_line','fsec_date','contact_number'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = '';
     });
@@ -965,18 +569,16 @@
     const mergedAddress = `Region ${region}, ${province}, ${municipal}, Barangay ${barangay}, ${line}`;
 
     const entry = {
-      io_number: document.getElementById('io_number').value.trim(),
-      fsic_number: document.getElementById('fsic_number').value.trim(),
-      insp_owner: document.getElementById('insp_owner').value.trim(),
-      business_name: document.getElementById('business_name').value.trim(),
-      insp_address: mergedAddress,
+      fsec_owner: document.getElementById('fsec_owner').value.trim(),
+      proposed_project: document.getElementById('proposed_project').value.trim(),
+      fsec_address: mergedAddress,
       addr_barangay: barangay,
       addr_line: line,
-      date_inspected: document.getElementById('date_inspected').value,
-      inspected_by: document.getElementById('inspected_by').value.trim(),
+      fsec_date: document.getElementById('fsec_date').value,
+      contact_number: document.getElementById('contact_number').value.trim(),
       created_at: new Date().toISOString()
     };
-    if (!entry.io_number || !entry.fsic_number || !entry.insp_owner || !entry.business_name || !barangay || !line || !entry.date_inspected || !entry.inspected_by) {
+    if (!entry.fsec_owner || !entry.proposed_project || !barangay || !line || !entry.fsec_date || !entry.contact_number) {
       showToast('⚠️ Please fill in all required fields.'); return;
     }
     if (!isSupabaseEnabled()) {
@@ -995,15 +597,13 @@
     (async () => {
       try {
         const payload = {
-          io_number: entry.io_number,
-          owner_name: entry.insp_owner,
-          business_name: entry.business_name,
-          address: entry.insp_address,
-          date_inspected: entry.date_inspected,
-          fsic_number: entry.fsic_number,
-          inspected_by: entry.inspected_by || null
+          owner_name: entry.fsec_owner,
+          proposed_project: entry.proposed_project,
+          address: entry.fsec_address,
+          date: entry.fsec_date,
+          contact_number: entry.contact_number
         };
-        const q = supabaseClient.from('inspection_logbook');
+        const q = supabaseClient.from('fsec_building_plan_logbook');
         const { error } = (editingId)
           ? await q.update(payload).eq('id', editingId)
           : await q.insert(payload);
@@ -1019,13 +619,14 @@
   function setPrintDate() {
     const el = document.getElementById('print-date');
     if (!el) return;
-    el.textContent = new Date().toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' });
+    const now = new Date();
+    el.textContent = now.toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' });
   }
 
   function printPanel() {
-    setPrintDate(); // Use current date in printed header
+    setPrintDate();
     const oldTitle = document.title;
-    document.title = ''; // Reduces browser print header text
+    document.title = '';
     setTimeout(() => {
       window.print();
       setTimeout(() => { document.title = oldTitle; }, 500);
@@ -1048,7 +649,7 @@
     if (addrLine != null && addrBarangay != null && (addrLine !== '' || addrBarangay !== '')) {
       return [addrLine, addrBarangay, 'Manolo Fortich', 'Bukidnon', 'Region X'].filter(Boolean).join(', ');
     }
-    const full = (row.insp_address || row.fsec_address || '').toString().trim();
+    const full = (row.fsec_address || '').toString().trim();
     if (!full) return '—';
     const parts = full.split(/,\s*/);
     if (parts.length >= 5) {
@@ -1071,19 +672,17 @@
 
   async function loadFromSupabase() {
     const { data: rows, error } = await supabaseClient
-      .from('inspection_logbook')
-      .select('id, io_number, owner_name, business_name, address, date_inspected, fsic_number, inspected_by, created_at')
+      .from('fsec_building_plan_logbook')
+      .select('id, owner_name, proposed_project, address, date, contact_number, created_at')
       .order('created_at', { ascending: true });
     if (error) throw error;
     data = (rows || []).map(r => ({
       id: r.id,
-      io_number: r.io_number,
-      fsic_number: r.fsic_number,
-      insp_owner: r.owner_name,
-      business_name: r.business_name,
-      insp_address: r.address,
-      date_inspected: r.date_inspected,
-      inspected_by: r.inspected_by || '',
+      fsec_owner: r.owner_name,
+      proposed_project: r.proposed_project,
+      fsec_address: r.address,
+      fsec_date: r.date,
+      contact_number: r.contact_number,
       created_at: r.created_at
     }));
   }

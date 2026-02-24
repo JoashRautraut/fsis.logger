@@ -19,9 +19,13 @@ CREATE TABLE inspection_logbook (
   address         TEXT NOT NULL,
   date_inspected  DATE NOT NULL,
   fsic_number     VARCHAR(50) NOT NULL,
+  inspected_by    VARCHAR(255),
   created_at      TIMESTAMPTZ DEFAULT NOW() NOT NULL,
   updated_at      TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
+
+-- If table already exists, add the column with:
+-- ALTER TABLE inspection_logbook ADD COLUMN IF NOT EXISTS inspected_by VARCHAR(255);
 
 -- Auto-update updated_at on row change
 CREATE OR REPLACE FUNCTION update_updated_at()
