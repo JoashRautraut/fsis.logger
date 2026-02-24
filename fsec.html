@@ -59,6 +59,24 @@
     font-weight: 500;
     white-space: nowrap;
   }
+  .storage-badge {
+    margin-left: 8px;
+    font-size: 0.65rem;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+  }
+  .storage-badge.db {
+    background: rgba(0, 180, 100, 0.2);
+    border: 1px solid rgba(0, 180, 100, 0.5);
+    color: #b8f0d8;
+  }
+  .storage-badge.local {
+    background: rgba(255, 180, 0, 0.2);
+    border: 1px solid rgba(255, 180, 0, 0.5);
+    color: #ffeaa0;
+  }
   .header-link {
     color: var(--gold-light);
     text-decoration: none;
@@ -314,6 +332,7 @@
     </div>
     <a href="index.html" class="header-link">Inspection Logbook</a>
     <div class="header-badge">FSEC Building Plan Logbook</div>
+    <span id="storage-indicator" class="storage-badge" title="Where data is saved"></span>
   </div>
 </header>
 
@@ -439,7 +458,7 @@
 
 <script>
   const SUPABASE_URL = 'https://ezpwbgpbveazutmrnzlf.supabase.co';
-  const SUPABASE_ANON_KEY = ''; // Same as index.html: paste your anon public key from Supabase Dashboard → Project Settings → API
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6cHdiZ3BidmVhenV0bXJuemxmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4Nzk2NDksImV4cCI6MjA4NzQ1NTY0OX0.C5118CQPYAqay0FhtmKdJyl9LKUHFzMnN5ecnAx1NU8';  // your actual key // Same as index.html: paste your anon public key from Supabase Dashboard → Project Settings → API
   const supabaseClient = (window.supabase?.createClient && SUPABASE_URL && SUPABASE_ANON_KEY)
     ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
     : null;
@@ -591,7 +610,7 @@
       save();
       renderTable();
       closeModal();
-      showToast('✓ Record saved successfully!');
+      showToast('Saved to browser only. Paste Supabase anon key in this file to save to the database.');
       return;
     }
     (async () => {
@@ -611,8 +630,14 @@
         await loadFromSupabase();
         renderTable();
         closeModal();
-        showToast('✓ Record saved successfully!');
-      } catch (err) { showToast('⚠️ Save failed: ' + (err?.message || err)); }
+        showToast('Saved to database.');
+      } catch (err) {
+        const msg = err?.message || String(err);
+        const hint = (msg.includes('policy') || msg.includes('RLS') || err?.code === '42501')
+          ? ' Check Supabase: add anon RLS policy (see fsis.logger.sql).'
+          : '';
+        showToast('Save failed: ' + msg + hint);
+      }
     })();
   }
 
@@ -687,6 +712,20 @@
     }));
   }
 
+  function updateStorageIndicator() {
+    const el = document.getElementById('storage-indicator');
+    if (!el) return;
+    if (isSupabaseEnabled()) {
+      el.textContent = 'Database';
+      el.className = 'storage-badge db';
+      el.title = 'Data is saved to Supabase database.';
+    } else {
+      el.textContent = 'Local only';
+      el.className = 'storage-badge local';
+      el.title = 'Data is saved in this browser only. Set SUPABASE_ANON_KEY to save to database.';
+    }
+  }
+
   async function initData() {
     try {
       if (isSupabaseEnabled()) await loadFromSupabase();
@@ -695,6 +734,7 @@
       loadFromLocal();
       showToast('⚠️ Could not load from database. Using local data.');
     }
+    updateStorageIndicator();
     setPrintDate();
     renderTable();
   }
