@@ -52,6 +52,8 @@ let userLocationWatchId = null;
 let userLocationMarker = null;
 let userLocationAccuracyCircle = null;
 let hasCenteredOnUser = false;
+let lastUserLatitude = null;
+let lastUserLongitude = null;
 
 let currentExifLat = null;
 let currentExifLng = null;
@@ -60,10 +62,33 @@ let currentExifTakenAt = null;
 
 let inspectionMarkersLayer = null;
 
+function resizeMapLayout() {
+  const mapSection = document.querySelector('[data-view="map"]');
+  const layout = document.querySelector(".map-layout");
+  const mapEl = document.getElementById("map");
+  const header = document.querySelector("header");
+
+  if (!mapSection || !layout || !mapEl || !header) return;
+
+  const available = window.innerHeight - header.offsetHeight;
+  if (available <= 0) return;
+
+  layout.style.height = available + "px";
+  mapSection.style.height = available + "px";
+  mapEl.style.height = "100%";
+
+  if (mapInstance) {
+    setTimeout(() => mapInstance.invalidateSize(), 0);
+  }
+}
+
 function initLeafletMap() {
   if (mapInstance || !window.L) return;
   const el = document.getElementById("map");
   if (!el) return;
+
+  // Ensure the map fits the remaining viewport below the header
+  resizeMapLayout();
 
   // Clear in case Leaflet ever attached before
   el.innerHTML = "";
@@ -130,14 +155,10 @@ function resetMapView() {
 }
 
 function handleFabAddInspection() {
-  // Jump to inspection view and open the modal for a new entry
-  window.location.hash = "inspection";
-  // Give the view router a moment to switch, then open the modal
-  setTimeout(() => {
-    if (typeof inspectionOpenModal === "function") {
-      inspectionOpenModal();
-    }
-  }, 100);
+  // Stay on the map view and open the inspection modal in-place
+  if (typeof inspectionOpenModal === "function") {
+    inspectionOpenModal();
+  }
 }
 
 function showView(name) {
@@ -155,10 +176,11 @@ function showView(name) {
 
   if (name === "map") {
     if (!mapInstance) {
+      resizeMapLayout();
       initLeafletMap();
     } else {
       // Ensure map resizes correctly when returning to the tab
-      setTimeout(() => mapInstance.invalidateSize(), 0);
+      resizeMapLayout();
     }
   }
 }
@@ -172,6 +194,8 @@ function startUserLocationTracking() {
     (pos) => {
       const { latitude, longitude, accuracy } = pos.coords;
       const latlng = [latitude, longitude];
+      lastUserLatitude = latitude;
+      lastUserLongitude = longitude;
 
       if (!userLocationMarker) {
         userLocationMarker = L.marker(latlng, {
@@ -260,6 +284,13 @@ function init() {
   logoutBtn?.addEventListener("click", () => {
     clearSession();
     window.location.replace("./index.html");
+  });
+
+  // Keep the map sized correctly on window resize
+  window.addEventListener("resize", () => {
+    if (getCurrentView() === "map") {
+      resizeMapLayout();
+    }
   });
 
   initViewRouting();
@@ -581,13 +612,19 @@ function inspectionSaveEntry(e) {
     inspected_by:
       (document.getElementById("inspection_inspected_by") || { value: "" })
         .value.trim(),
-    // Optional coordinates and photo metadata extracted from EXIF
+    // Optional coordinates and photo metadata extracted from EXIF / geolocation
     lat: currentExifLat,
     lng: currentExifLng,
     photo_url: currentExifPreviewUrl,
     photo_taken_at: currentExifTakenAt,
     created_at: new Date().toISOString(),
   };
+
+  // If the photo has no GPS EXIF, fall back to the user's current geolocation
+  if (entry.lat == null && entry.lng == null && lastUserLatitude != null && lastUserLongitude != null) {
+    entry.lat = lastUserLatitude;
+    entry.lng = lastUserLongitude;
+  }
 
   if (
     !entry.io_number ||
