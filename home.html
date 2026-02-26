@@ -360,6 +360,29 @@
       z-index: 100;
     }
 
+    .save-indicator {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-8px);
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.96);
+      color: #f9fafb;
+      font-size: 0.8rem;
+      font-weight: 600;
+      box-shadow: var(--shadow-lg);
+      z-index: 1300;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .save-indicator.is-visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
     /* Floating action button for new inspection */
     .fab-add-inspection {
       position: fixed;
@@ -812,7 +835,7 @@
                 <th>Name of Owner</th>
                 <th>Business / Establishment</th>
                 <th>Address</th>
-                <th>Date Inspected</th>
+                <th class="th-date">Date Inspected</th>
                 <th>FSIC Number</th>
                 <th>Inspected By</th>
                 <th class="col-action">Action</th>
@@ -866,7 +889,7 @@
                 <th>Name of Owner</th>
                 <th>Proposed Project</th>
                 <th>Address</th>
-                <th>Date</th>
+                <th class="th-date">Date</th>
                 <th>Contact Number</th>
                 <th class="col-action">Action</th>
               </tr>
@@ -1058,16 +1081,18 @@
   </div>
 
   <div class="toast" id="inspection-toast"></div>
+  <div class="save-indicator" id="saveIndicator" aria-hidden="true">Record saved</div>
 
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 <script
   src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
   integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
   crossorigin=""
+  defer
 ></script>
-<script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+<script src="https://cdn.jsdelivr.net/npm/exif-js" defer></script>
 <script src="./home.js" defer></script>
 </body>
 </html>

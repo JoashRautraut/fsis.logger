@@ -594,6 +594,14 @@ footer {
     background: #f9fafb;
   }
 
+  th.th-date,
+  td.td-date {
+    min-width: 4.8em;
+    width: 4.8em;
+    white-space: nowrap;
+    overflow: visible;
+  }
+
   .home-embed .logbook-panel {
     box-shadow: none !important;
     border: none !important;

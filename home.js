@@ -46,7 +46,7 @@ function getCurrentView() {
 }
 
 const MAP_CENTER = [8.369, 124.864];
-const MAP_ZOOM = 13;
+const MAP_ZOOM = 12;
 let mapInstance = null;
 let userLocationWatchId = null;
 let userLocationMarker = null;
@@ -62,6 +62,7 @@ let currentExifTakenAt = null;
 let currentExifFile = null;
 
 let inspectionMarkersLayer = null;
+let inspectionDataLoaded = false;
 
 function resizeMapLayout() {
   const mapSection = document.querySelector('[data-view="map"]');
@@ -95,32 +96,35 @@ function initLeafletMap() {
   // Layer to hold all inspection markers so we can manage them together
   inspectionMarkersLayer = L.layerGroup().addTo(mapInstance);
 
-  // Base layers: OpenStreetMap + Google-style satellite with labels
+  // Base layers: OpenStreetMap (faster, lighter) + Google-style satellite with labels
   const osmLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
     attribution:
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
   });
 
-  // Uses Google tiles for a clearer satellite view with labels
+  // Uses Google tiles for a clearer satellite view with labels (heavier on data).
+  // To keep it usable on slow mobile data, we cap zoom and disable retina tiles.
   const satelliteLayer = L.tileLayer(
     "https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}",
     {
-      maxZoom: 20,
+      maxZoom: 19,
+      maxNativeZoom: 18,
+      detectRetina: false,
       subdomains: ["mt0", "mt1", "mt2", "mt3"],
       attribution:
         '&copy; <a href="https://www.google.com/maps">Google Maps</a>',
     }
   );
 
-  // Start with satellite as the default visible layer
+  // Start with the satellite layer as the default visible layer
   satelliteLayer.addTo(mapInstance);
 
   // Layer switcher so you can toggle between views
   L.control
     .layers(
       {
-        OpenStreetMap: osmLayer,
+        "Road map": osmLayer,
         Satellite: satelliteLayer,
       },
       {},
@@ -169,6 +173,12 @@ function showView(name) {
   }
 
   document.body.classList.toggle("is-map-view", name === "map");
+
+  if ((name === "map" || name === "inspection") && !inspectionDataLoaded) {
+    inspectionInitData();
+  } else if (name === "fsec" && !fsecDataLoaded) {
+    fsecInitData();
+  }
 
   const links = Array.from(document.querySelectorAll("[data-view-link]"));
   for (const link of links) {
@@ -344,10 +354,15 @@ function init() {
   });
 
   initViewRouting();
-  inspectionInitData();
-  fsecInitData();
   initInspectionPhotoExif();
   refreshStorageBadge();
+
+  const initialView = getCurrentView();
+  if ((initialView === "map" || initialView === "inspection") && !inspectionDataLoaded) {
+    inspectionInitData();
+  } else if (initialView === "fsec" && !fsecDataLoaded) {
+    fsecInitData();
+  }
 }
 
 document.addEventListener("DOMContentLoaded", init);
@@ -423,6 +438,21 @@ function logbookShowToast(id, msg) {
   setTimeout(() => t.classList.remove("show"), 3000);
 }
 
+function showSaveIndicator(message) {
+  const el = document.getElementById("saveIndicator");
+  if (!el) return;
+  el.textContent = message;
+  el.setAttribute("aria-hidden", "false");
+  el.classList.add("is-visible");
+  if (showSaveIndicator._timer) {
+    clearTimeout(showSaveIndicator._timer);
+  }
+  showSaveIndicator._timer = setTimeout(() => {
+    el.classList.remove("is-visible");
+    el.setAttribute("aria-hidden", "true");
+  }, 2200);
+}
+
 // -----------------------------
 // Inspection logbook module
 // -----------------------------
@@ -439,10 +469,21 @@ function inspectionLoadFromLocal() {
 }
 
 function inspectionSaveToLocal() {
-  localStorage.setItem(
-    INSPECTION_STORAGE_KEY,
-    JSON.stringify(inspectionData)
-  );
+  // Avoid storing huge inline image data URLs in localStorage (they quickly exceed quota).
+  const safe = inspectionData.map((row) => {
+    const copy = { ...row };
+    if (typeof copy.photo_url === "string" && copy.photo_url.startsWith("data:")) {
+      copy.photo_url = null;
+    }
+    return copy;
+  });
+
+  try {
+    localStorage.setItem(INSPECTION_STORAGE_KEY, JSON.stringify(safe));
+  } catch (err) {
+    console.warn("Failed to persist inspection cache to localStorage:", err);
+    // If caching fails, we silently skip it; the in-memory data and database writes still succeed.
+  }
 }
 
 function inspectionSave() {
@@ -706,39 +747,38 @@ function inspectionSaveEntry(e) {
     entry.lng = lastUserLongitude;
   }
 
-  if (
-    !entry.io_number ||
-    !entry.fsic_number ||
-    !entry.insp_owner ||
-    !entry.business_name ||
-    !barangay ||
-    !line ||
-    !entry.date_inspected ||
-    !entry.inspected_by
-  ) {
+  if (!entry.business_name || !barangay || !line || !entry.date_inspected) {
     logbookShowToast(
       "inspection-toast",
-      "⚠️ Please fill in all required fields."
+      "⚠️ Please fill in at least Business name, Barangay, House/Street, and Date inspected."
     );
     return;
   }
 
-  if (!isSupabaseEnabled()) {
-    if (inspectionEditingIdx !== null) {
-      const prev = inspectionData[inspectionEditingIdx] || {};
-      inspectionData[inspectionEditingIdx] = {
-        ...prev,
-        ...entry,
-        id: prev.id || null,
-        created_at: prev.created_at || entry.created_at,
-      };
-    } else {
-      inspectionData.push(entry);
-    }
-    inspectionSave();
-    inspectionRenderTable();
-    addInspectionMarkerFromEntry(entry);
-    inspectionCloseModal();
+  const isOnline = isSupabaseEnabled();
+
+  // Optimistic local update so the UI responds immediately
+  if (inspectionEditingIdx !== null) {
+    const prev = inspectionData[inspectionEditingIdx] || {};
+    inspectionData[inspectionEditingIdx] = {
+      ...prev,
+      ...entry,
+      id: prev.id || null,
+      created_at: prev.created_at || entry.created_at,
+    };
+  } else {
+    inspectionData.push({
+      ...entry,
+      id: null,
+    });
+  }
+  inspectionSaveToLocal();
+  inspectionRenderTable();
+  addInspectionMarkerFromEntry(entry);
+  inspectionCloseModal();
+  showSaveIndicator("Inspection record saved");
+
+  if (!isOnline) {
     logbookShowToast(
       "inspection-toast",
       "Saved on this device only (offline mode)."
@@ -750,6 +790,16 @@ function inspectionSaveEntry(e) {
     try {
       // If we have a file and Supabase Storage, upload to the 'storage' bucket
       if (currentExifFile && supabaseClient?.storage) {
+        let uploadFile = currentExifFile;
+        if (uploadFile.size > 1024 * 1024) {
+          try {
+            uploadFile = await compressInspectionImage(uploadFile);
+          } catch (compressErr) {
+            console.warn("Image compression failed, using original file:", compressErr);
+            uploadFile = currentExifFile;
+          }
+        }
+
         const fileExt =
           (currentExifFile.name && currentExifFile.name.split(".").pop()) ||
           "jpg";
@@ -760,10 +810,10 @@ function inspectionSaveEntry(e) {
         try {
           const { error: uploadError } = await supabaseClient.storage
             .from("storage")
-            .upload(path, currentExifFile, {
+            .upload(path, uploadFile, {
               cacheControl: "3600",
               upsert: false,
-              contentType: currentExifFile.type || "image/jpeg",
+              contentType: uploadFile.type || currentExifFile.type || "image/jpeg",
             });
           if (!uploadError) {
             const { data: urlData } = supabaseClient.storage
@@ -1028,6 +1078,65 @@ function initInspectionPhotoExif() {
   });
 }
 
+async function compressInspectionImage(file) {
+  return new Promise((resolve, reject) => {
+    try {
+      if (!window.FileReader || !document.createElement) {
+        resolve(file);
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          try {
+            const maxDimension = 1600;
+            const scale =
+              Math.max(img.width, img.height) > maxDimension
+                ? maxDimension / Math.max(img.width, img.height)
+                : 1;
+
+            const canvas = document.createElement("canvas");
+            canvas.width = Math.round(img.width * scale);
+            canvas.height = Math.round(img.height * scale);
+            const ctx = canvas.getContext("2d");
+            if (!ctx) {
+              resolve(file);
+              return;
+            }
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            canvas.toBlob(
+              (blob) => {
+                if (!blob || blob.size >= file.size) {
+                  resolve(file);
+                  return;
+                }
+                const compressed = new File([blob], file.name, {
+                  type: blob.type || "image/jpeg",
+                });
+                resolve(compressed);
+              },
+              "image/jpeg",
+              0.75
+            );
+          } catch (err) {
+            console.warn("Canvas compression error:", err);
+            resolve(file);
+          }
+        };
+        img.onerror = () => resolve(file);
+        img.src = e.target?.result;
+      };
+      reader.onerror = () => resolve(file);
+      reader.readAsDataURL(file);
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
+
 function dmsToDecimal(dms, ref) {
   if (!dms || dms.length !== 3) return null;
   const deg = dms[0];
@@ -1041,12 +1150,6 @@ function dmsToDecimal(dms, ref) {
 function addInspectionMarkerFromEntry(entry) {
   if (!mapInstance || !inspectionMarkersLayer) return;
   if (entry.lat == null || entry.lng == null) return;
-
-  const label =
-    entry.business_name ||
-    entry.insp_owner ||
-    entry.io_number ||
-    "Inspection location";
 
   let icon;
   if (entry.photo_url) {
@@ -1076,6 +1179,21 @@ function addInspectionMarkerFromEntry(entry) {
   });
 }
 
+const INSPECTION_MARKER_BATCH_SIZE = 40;
+
+function renderInspectionMarkersBatched() {
+  if (!mapInstance || !inspectionMarkersLayer || !Array.isArray(inspectionData)) return;
+  inspectionMarkersLayer.clearLayers();
+  const withCoords = inspectionData.filter((row) => row.lat != null && row.lng != null);
+  let i = 0;
+  function addBatch() {
+    const end = Math.min(i + INSPECTION_MARKER_BATCH_SIZE, withCoords.length);
+    for (; i < end; i++) addInspectionMarkerFromEntry(withCoords[i]);
+    if (i < withCoords.length) requestAnimationFrame(addBatch);
+  }
+  addBatch();
+}
+
 function inspectionPrintPanel() {
   inspectionSetPrintDate();
   const oldTitle = document.title;
@@ -1094,11 +1212,13 @@ async function inspectionLoadFromSupabase() {
   const selectWithoutGeo =
     "id, io_number, owner_name, business_name, address, date_inspected, fsic_number, inspected_by, created_at";
 
+  const INSPECTION_FETCH_LIMIT = 2000;
   const run = async (select) =>
     await supabaseClient
       .from("inspection_logbook")
       .select(select)
-      .order("created_at", { ascending: true });
+      .order("created_at", { ascending: true })
+      .limit(INSPECTION_FETCH_LIMIT);
 
   let rows;
   {
@@ -1133,26 +1253,30 @@ async function inspectionLoadFromSupabase() {
   }));
 }
 
-async function inspectionInitData() {
-  try {
-    if (isSupabaseEnabled()) await inspectionLoadFromSupabase();
-    else inspectionLoadFromLocal();
-  } catch (err) {
-    inspectionLoadFromLocal();
-    console.warn("Inspection load failed, using local storage:", err);
-    logbookShowToast("inspection-toast", "Using data stored on this device.");
-  }
+function inspectionInitData() {
+  if (inspectionDataLoaded) return;
+  inspectionDataLoaded = true;
+
+  // Show cached data immediately so map and table feel instant
+  inspectionLoadFromLocal();
   inspectionSetPrintDate();
   inspectionRenderTable();
-  
-  // Render markers on the map if it's already initialized
-  if (mapInstance && inspectionMarkersLayer && Array.isArray(inspectionData)) {
-    inspectionData.forEach((row) => {
-      if (row.lat != null && row.lng != null) {
-        addInspectionMarkerFromEntry(row);
-      }
-    });
-  }
+  renderInspectionMarkersBatched();
+
+  if (!isSupabaseEnabled()) return;
+
+  // Refresh from database in background; update UI when done
+  (async () => {
+    try {
+      await inspectionLoadFromSupabase();
+      inspectionSetPrintDate();
+      inspectionRenderTable();
+      renderInspectionMarkersBatched();
+    } catch (err) {
+      console.warn("Inspection refresh from database failed:", err);
+      logbookShowToast("inspection-toast", "Using cached data. Could not refresh from server.");
+    }
+  })();
 }
 
 // -----------------------------
@@ -1163,6 +1287,7 @@ const FSEC_STORAGE_KEY = "bfp_fsec";
 let fsecData = [];
 let fsecEditingIdx = null;
 let fsecEditingId = null;
+let fsecDataLoaded = false;
 
 function fsecLoadFromLocal() {
   fsecData = JSON.parse(localStorage.getItem(FSEC_STORAGE_KEY) || "[]");
@@ -1403,21 +1528,29 @@ function fsecSaveEntry(e) {
     return;
   }
 
-  if (!isSupabaseEnabled()) {
-    if (fsecEditingIdx !== null) {
-      const prev = fsecData[fsecEditingIdx] || {};
-      fsecData[fsecEditingIdx] = {
-        ...prev,
-        ...entry,
-        id: prev.id || null,
-        created_at: prev.created_at || entry.created_at,
-      };
-    } else {
-      fsecData.push(entry);
-    }
-    fsecSave();
-    fsecRenderTable();
-    fsecCloseModal();
+  const isOnline = isSupabaseEnabled();
+
+  // Optimistic local update so the UI responds immediately
+  if (fsecEditingIdx !== null) {
+    const prev = fsecData[fsecEditingIdx] || {};
+    fsecData[fsecEditingIdx] = {
+      ...prev,
+      ...entry,
+      id: prev.id || null,
+      created_at: prev.created_at || entry.created_at,
+    };
+  } else {
+    fsecData.push({
+      ...entry,
+      id: null,
+    });
+  }
+  fsecSaveToLocal();
+  fsecRenderTable();
+  fsecCloseModal();
+  showSaveIndicator("FSEC record saved");
+
+  if (!isOnline) {
     logbookShowToast(
       "fsec-toast",
       "Saved on this device only (offline mode)."
@@ -1439,9 +1572,7 @@ function fsecSaveEntry(e) {
         ? await q.update(payload).eq("id", fsecEditingId)
         : await q.insert(payload);
       if (error) throw error;
-      await fsecLoadFromSupabase();
-      fsecRenderTable();
-      fsecCloseModal();
+      // Database write completes in the background; UI was already updated optimistically
       logbookShowToast("fsec-toast", "Saved to database.");
     } catch (err) {
       const msg = err?.message || String(err);
@@ -1499,14 +1630,22 @@ async function fsecLoadFromSupabase() {
 }
 
 async function fsecInitData() {
+  if (fsecDataLoaded) return;
+  fsecDataLoaded = true;
   try {
-    if (isSupabaseEnabled()) await fsecLoadFromSupabase();
-    else fsecLoadFromLocal();
+    fsecLoadFromLocal();
+    fsecSetPrintDate();
+    fsecRenderTable();
+    if (isSupabaseEnabled()) {
+      await fsecLoadFromSupabase();
+      fsecSetPrintDate();
+      fsecRenderTable();
+    }
   } catch (err) {
     fsecLoadFromLocal();
     console.warn("FSEC load failed, using local storage:", err);
     logbookShowToast("fsec-toast", "Using data stored on this device.");
+    fsecSetPrintDate();
+    fsecRenderTable();
   }
-  fsecSetPrintDate();
-  fsecRenderTable();
 }
